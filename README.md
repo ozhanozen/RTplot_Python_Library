@@ -1,1 +1,1 @@
-RTplot_Python_Library
+The python library for real-time plotting.
