@@ -48,6 +48,9 @@ class RTplot_Python:
         self.__IS_REVERSE = {}
         self.__TIME_TO_RESET = {}
 
+        # Debug Messages.
+        self.__DEBUG_ = False
+
     # Function to add a new plot. A plot may consist multiple curves (both X and Y values vs to Time,
     # two different end-effectors, etc) and a plot may be either time-series or not. Even a non-time-series may
     # include a time history (if you wanna plot the last 1 second of end-effector like a shadow following
@@ -97,7 +100,6 @@ class RTplot_Python:
 
         if (isTimeReverseLegend[2] == True):
             self.__PLOTS["Plot_" + str(self.__nPLOTS)].addLegend()
-            print(CurveNames)
 
         # Generates buffer sizes for data and sets labels/ranges according to the typpe of the plot set.
         if (isTimeReverseLegend[0] == True):
@@ -140,7 +142,6 @@ class RTplot_Python:
                 if (isTimeReverseLegend[0] == True):
                     self.__CURVES["Curve_" + str(self.__nPLOTS) + "_" + str(i+1)] = self.__PLOTS["Plot_" + str(self.__nPLOTS)].plot(self.__DATA_BUFFER["T" + str(self.__nPLOTS)][:],self.__DATA_BUFFER["Y" + str(self.__nPLOTS)][i, :],pen=(i,nCurves),name=CurveNames[i])
                 else:
-                    print(CurveNames)
                     self.__CURVES["Curve_" + str(self.__nPLOTS) + "_" + str(i+1)] = self.__PLOTS["Plot_" + str(self.__nPLOTS)].plot(self.__DATA_BUFFER["X" + str(self.__nPLOTS)][i, :],self.__DATA_BUFFER["Y" + str(self.__nPLOTS)][i, :],pen=(i,nCurves),name=CurveNames[i])
         else:
             for i in range(0, nCurves):
@@ -192,9 +193,11 @@ class RTplot_Python:
                             self.__DATA_BUFFER["X" + str(i)][t - 1, :] = np.ones(self.__DATA_BUFFER_SIZE["Plot_" + str(i)]) * self.Data["X_" + str(i) + "_" + str(t)] # Initialize to the first value acquired. Show like the past values were like these
                             self.__DATA_BUFFER["Y" + str(i)][t - 1, :] = np.ones(self.__DATA_BUFFER_SIZE["Plot_" + str(i)]) * self.Data["Y_" + str(i) + "_" + str(t)]
                     self.__FIRST_UPDATE["Plot_" + str(i)] = False
-                    print("Plot_" + str(i) + " data was RESET")
+                    if (self.__DEBUG_ == True):
+                        print("Plot_" + str(i) + " data was RESET")
                 elif ((self.__DATA_BUFFER["T" + str(i)][-1] - self.__DATA_BUFFER["T" + str(i)][0] > (self.__TIME_TO_RESET["Plot_" + str(i)] + self.__SPEED_WARNING_ALLOWANCE)) and (self.__FIRST_UPDATE["Plot_" + str(i)] == False)): # This gives warning in case you cannot plot fast enough as you command and you buffer is not enough to make this un-noticable. Check class comments.
-                    print("WARNING: THE APP IS TOO SLOW TO CATCH UP DRAWING SPEED AIM, DELAY OUT OF BOUNDARIES: " + str( self.__DATA_BUFFER["T" + str(1)][-1] - self.__DATA_BUFFER["T" + str(1)][0] - (self.__DATA_BUFFER_SIZE_SAFE_PART_IN_SEC + self.__DATA_HISTORY["Plot_" + str(i)]) ) )
+                    if (self.__DEBUG_ == True):
+                        print("WARNING: THE APP IS TOO SLOW TO CATCH UP DRAWING SPEED AIM, DELAY OUT OF BOUNDARIES: " + str( self.__DATA_BUFFER["T" + str(1)][-1] - self.__DATA_BUFFER["T" + str(1)][0] - (self.__DATA_BUFFER_SIZE_SAFE_PART_IN_SEC + self.__DATA_HISTORY["Plot_" + str(i)]) ) )
 
                 if not ((self.__IS_TIME["Plot_" + str(i)] == True) and (self.Data["T_" + str(i)] == self.__DATA_BUFFER["T" + str(i)][-1])): # Unless you did not receive any new time data.
                     self.__DATA_BUFFER["T" + str(i)][:-1] = self.__DATA_BUFFER["T" + str(i)][1:] # Update and shift buffer, for common time value and independent Y values for each curve.
@@ -246,4 +249,13 @@ class RTplot_Python:
     # Adds a new row for the next plots added.
     def New_Row(self):
         self.__Window.nextRow()
+
+    # Turns ON\OFF Debug Messages.
+    def Debug_Set(self, Boolean):
+        if (Boolean == True):
+            self.__DEBUG_ = True
+        elif(Boolean == False):
+            self.__DEBUG_ = False
+        else:
+            print("Invalid input to the UDP_Debug_Set function")
 
