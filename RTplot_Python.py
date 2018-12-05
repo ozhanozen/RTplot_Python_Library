@@ -259,3 +259,6 @@ class RTplot_Python:
         else:
             print("Invalid input to the UDP_Debug_Set function")
 
+    # Quits the application, can be used with trigger.
+    def Stop_Plotting(self):
+        self.__Application.quit()

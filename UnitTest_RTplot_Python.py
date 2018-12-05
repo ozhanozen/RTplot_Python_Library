@@ -31,7 +31,6 @@ class DATAUpdate(threading.Thread):
             PosX = 0.5+0.2*np.sin(2*np.pi*0.2*mytime)
             PosY = 0.2*np.cos(2*np.pi*0.2*mytime)
 
-
             myPlotter.Data["T_1"] = mytime
             myPlotter.Data["Y_1_1"] = PosX
             myPlotter.Data["Y_1_2"] = PosX+ 0.05 + 0.04*np.random.rand(1,)
